@@ -3,7 +3,7 @@ phases:
   install:
     commands:
       - echo Package install started on `date`
-      - gem bundle install
+      - bundle install
   pre_build:
     commands:
       - echo Pre build started on `date`
