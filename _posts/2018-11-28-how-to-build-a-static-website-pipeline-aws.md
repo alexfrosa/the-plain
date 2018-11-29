@@ -3,9 +3,9 @@ title: How to Build a Static Website Pipeline on AWS
 updated: 2018-10-28 10:00s
 ---
 
-This first post shows how to build a blog with a static website generator and how to use AWS tools like CodePipeline, S3, and CloudFront to implement a continuous delivery pipeline.
+This first post shows how to build a Blog with a static website generator and how to use AWS tools like CodePipeline, CodeBuild, S3, and CloudFront to implement a continuous delivery pipeline to our Blog.
 
-Jekyll is a popular static generator with a reasonable amount of themes available. For this example we are going to use the theme The Plain, but the procedure should be similar to other Jekyll themes as well. 
+Jekyll is a popular static generator with a reasonable amount of themes available. As example for this post, we are going to use the theme The Plain, but the procedure should be similar to other Jekyll themes. 
 
 #### Setup the Jekyll's Theme
 

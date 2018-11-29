@@ -17,6 +17,6 @@ phases:
       - echo Post build started on `date`
       - aws s3 sync --delete ./_site s3://$S3_BUCKET_WEBSITE/
       - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths '/*'
-artifacts:
-  files:
-    - '_site/**/*'
+cache:
+  paths:
+    - '$GEM_HOME/**/*'
