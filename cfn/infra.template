@@ -60,11 +60,44 @@
         }
       }
     },
+    "CloudFrontOriginAccessIdentity": {
+        "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+        "Properties": {
+            "CloudFrontOriginAccessIdentityConfig": {
+                "Comment": "MyStaticSiteGenerator"
+            }
+        }
+    },
+    "BucketPolicyWebsite" : {
+      "Type" : "AWS::S3::BucketPolicy",
+      "Properties" : {
+        "Bucket" : { "Ref" : "S3BucketWebsite" },
+        "PolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "GetObject",
+              "Effect": "Allow",
+              "Principal": {
+                "CanonicalUser": { "Fn::GetAtt": [ "CloudFrontOriginAccessIdentity", "S3CanonicalUserId" ]}
+              },
+              "Action": "s3:GetObject",
+              "Resource": { "Fn::Sub" : "arn:aws:s3:::${S3BucketWebsite}/*" }
+            }
+          ]
+        }
+      }
+    },
     "CloudFrontDistribution": {
       "DependsOn": ["S3BucketPipeline"],
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
         "DistributionConfig": {
+          "Aliases": [
+            {
+              "Ref": "WebsiteHostname"
+            }
+          ],
           "DefaultCacheBehavior": {
             "ForwardedValues": {
               "QueryString": true
@@ -72,7 +105,7 @@
             "TargetOriginId": {
               "Ref": "WebsiteHostname"
             },
-            "ViewerProtocolPolicy": "https-only"
+            "ViewerProtocolPolicy": "redirect-to-https"
           },
           "Enabled": true,
           "DefaultRootObject": "index.html",
@@ -85,7 +118,7 @@
                 "Ref": "WebsiteHostname"
               },
               "S3OriginConfig": {
-                "OriginAccessIdentity": ""
+                "OriginAccessIdentity": { "Fn::Sub": "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"}
               }
             }
           ],
@@ -164,7 +197,7 @@
               ],
               "Resource": [
                 {
-                  "Fn::Sub": "arn:aws:s3:::${S3BucketPipeline}/"
+                  "Fn::Sub": "arn:aws:s3:::${S3BucketPipeline}"
                 },
                 {
                   "Fn::Sub": "arn:aws:s3:::${S3BucketPipeline}/*"
@@ -175,11 +208,13 @@
               "Sid": "S3WebsiteHosting",
               "Effect": "Allow",
               "Action": [
+                "s3:DeleteObject",
+                "s3:ListBucket",
                 "s3:PutObject"
               ],
               "Resource": [
                 {
-                  "Fn::Sub": "arn:aws:s3:::${S3BucketWebsite}/"
+                  "Fn::Sub": "arn:aws:s3:::${S3BucketWebsite}"
                 },
                 {
                   "Fn::Sub": "arn:aws:s3:::${S3BucketWebsite}/*"
@@ -193,7 +228,7 @@
                 "cloudfront:CreateInvalidation"
               ],
               "Resource": {
-                "Fn::Sub": "arn:aws:cloudfront::${AWS::AccountId}:distribution/${CloudFrontDistribution}"
+                "Fn::Sub": "*"
               }
             }
           ]
