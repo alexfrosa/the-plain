@@ -4,7 +4,7 @@ phases:
     commands:
       - echo Package install started on `date`
       - gem update bundler
-      - bundle install
+      - bundle install --path /root/bundle
   pre_build:
     commands:
       - echo Pre build started on `date`
@@ -19,4 +19,4 @@ phases:
       - aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths '/*'
 cache:
   paths:
-    - '/usr/local/bundle/**/*'
+    - '/root/bundle/**/*'
